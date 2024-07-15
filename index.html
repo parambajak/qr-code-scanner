@@ -22,7 +22,7 @@
     <script>
         function onScanSuccess(qrCodeMessage) {
             console.log('Scanned content:', qrCodeMessage);
-            fetch('https://https://script.google.com/macros/s/AKfycbxDwg5253KBUry_JLYRzpi1yggsTNmWKSuMamxbDuK4_qZvL9apEuh_gg-4Y4NC835NPw/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbxDwg5253KBUry_JLYRzpi1yggsTNmWKSuMamxbDuK4_qZvL9apEuh_gg-4Y4NC835NPw/exec', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -39,10 +39,13 @@
             console.error('Error scanning QR code:', errorMessage);
         }
 
-        // Create the QR code scanner instance
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: 250 }, /* verbose= */ false);
-        html5QrcodeScanner.render(onScanSuccess, onScanError);
+        // Initialize the HTML5 QR Code Scanner
+        document.addEventListener('DOMContentLoaded', (event) => {
+            console.log('DOM fully loaded and parsed');
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: 250 }, /* verbose= */ false);
+            html5QrcodeScanner.render(onScanSuccess, onScanError);
+        });
     </script>
 </body>
 </html>
