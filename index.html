@@ -21,19 +21,25 @@
     <video id="preview"></video>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
     <script>
+        // Initialize the scanner
         let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+
+        // Add listener for the scan event
         scanner.addListener('scan', function (content) {
-            console.log(content);
+            console.log('Scanned content:', content);
             fetch('https://your-google-apps-script-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ qrContent: content })
-            }).then(response => response.json())
-            .then(data => console.log(data))
+            })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
             .catch(error => console.error('Error:', error));
         });
+
+        // Get available cameras and start the scanner
         Instascan.Camera.getCameras().then(function (cameras) {
             if (cameras.length > 0) {
                 scanner.start(cameras[0]);
@@ -41,7 +47,7 @@
                 console.error('No cameras found.');
             }
         }).catch(function (e) {
-            console.error(e);
+            console.error('Error accessing cameras:', e);
         });
     </script>
 </body>
