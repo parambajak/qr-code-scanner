@@ -8,48 +8,41 @@
             text-align: center;
             padding: 20px;
         }
-        video {
+        #reader {
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             margin: 20px auto;
-            display: block;
         }
     </style>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="preview"></video>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <div id="reader"></div>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
-        // Initialize the scanner
-        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-
-        // Add listener for the scan event
-        scanner.addListener('scan', function (content) {
-            console.log('Scanned content:', content);
+        function onScanSuccess(qrCodeMessage) {
+            console.log('Scanned content:', qrCodeMessage);
             fetch('https://your-google-apps-script-url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ qrContent: content })
+                body: JSON.stringify({ qrContent: qrCodeMessage })
             })
             .then(response => response.json())
             .then(data => console.log('Success:', data))
             .catch(error => console.error('Error:', error));
-        });
+        }
 
-        // Get available cameras and start the scanner
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                console.log('Cameras found:', cameras);
-                scanner.start(cameras[0]);
-            } else {
-                console.error('No cameras found.');
-            }
-        }).catch(function (e) {
-            console.error('Error accessing cameras:', e);
-        });
+        function onScanError(errorMessage) {
+            // Handle scan error
+            console.error('Error scanning QR code:', errorMessage);
+        }
+
+        // Create the QR code scanner instance
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 }, /* verbose= */ false);
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
     </script>
 </body>
 </html>
