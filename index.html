@@ -35,16 +35,23 @@
         }
 
         function onScanError(errorMessage) {
-            // Handle scan error
             console.error('Error scanning QR code:', errorMessage);
         }
 
-        // Initialize the HTML5 QR Code Scanner
         document.addEventListener('DOMContentLoaded', (event) => {
             console.log('DOM fully loaded and parsed');
-            let html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", { fps: 10, qrbox: 250 });
-            html5QrcodeScanner.render(onScanSuccess, onScanError);
+            const html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, // Use rear camera on mobile devices
+                {
+                    fps: 10,    // Optional, frame per second for qr code scanning
+                    qrbox: { width: 250, height: 250 }  // Optional, if you want bounded box UI
+                },
+                onScanSuccess,
+                onScanError
+            ).catch(err => {
+                console.error('Error starting QR code scanner:', err);
+            });
         });
     </script>
 </body>
