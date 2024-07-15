@@ -8,43 +8,43 @@
             text-align: center;
             padding: 20px;
         }
-        video {
+        #reader {
             width: 100%;
             max-width: 600px;
             margin: 20px auto;
-            display: block;
         }
     </style>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="qr-video"></video>
-    <script type="module">
-        import QrScanner from "https://unpkg.com/qr-scanner/qr-scanner.min.js";
-
-        const videoElem = document.getElementById('qr-video');
-        const qrScanner = new QrScanner(videoElem, result => handleScan(result));
-
-        function handleScan(result) {
-            console.log('Scanned content:', result);
+    <div id="reader"></div>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script>
+        function onScanSuccess(qrCodeMessage) {
+            console.log('Scanned content:', qrCodeMessage);
             fetch('https://script.google.com/macros/s/AKfycbxDwg5253KBUry_JLYRzpi1yggsTNmWKSuMamxbDuK4_qZvL9apEuh_gg-4Y4NC835NPw/exec', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ qrContent: result })
+                body: JSON.stringify({ qrContent: qrCodeMessage })
             })
             .then(response => response.json())
             .then(data => console.log('Success:', data))
             .catch(error => console.error('Error:', error));
         }
 
-        QrScanner.hasCamera().then(hasCamera => {
-            if (hasCamera) {
-                qrScanner.start();
-            } else {
-                console.error('No camera found.');
-            }
+        function onScanError(errorMessage) {
+            // Handle scan error
+            console.error('Error scanning QR code:', errorMessage);
+        }
+
+        // Initialize the HTML5 QR Code Scanner
+        document.addEventListener('DOMContentLoaded', (event) => {
+            console.log('DOM fully loaded and parsed');
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess, onScanError);
         });
     </script>
 </body>
